@@ -1,4 +1,4 @@
-The MKLVSL.jl package is licensed under the MIT "Expat" License:
+The Daal.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2017: Andreas Noack.
 > 
