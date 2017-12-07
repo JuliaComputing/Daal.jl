@@ -38,9 +38,9 @@ function main(output = true)
         # Create an algorithm object for the K-Means algorithm
         localInit = Kmeans.Init.Distributed(Daal.Step1Local, Float64, Kmeans.Init.RandomDense, nClusters, nBlocks*nVectorsInBlock, (i - 1)*nVectorsInBlock)
 
-        Algorithms.setInput(localInit, Kmeans.Init.Data, data[i])
-        Algorithms.compute(localInit)
-        Algorithms.addInput(masterInit, Kmeans.Init.PartialResults, Kmeans.Init.getPartialResult(localInit))
+        set(localInit[Val{:input}()], Kmeans.Init.Data, data[i])
+        compute(localInit)
+        add(masterInit[Val{:input}()], Kmeans.Init.PartialResults, Kmeans.Init.getPartialResult(localInit))
     end
 
     Algorithms.compute(masterInit)
@@ -54,14 +54,14 @@ function main(output = true)
             localAlgorithm = Kmeans.Distributed(Daal.Step1Local, nClusters, false)
 
             # Set the input data to the algorithm
-            Algorithms.setInput(localAlgorithm, Kmeans.Data, data[i])
-            Algorithms.setInput(localAlgorithm, Kmeans.InputCentroids, centroids)
+            set(localAlgorithm[Val{:input}()], Kmeans.Data, data[i])
+            set(localAlgorithm[Val{:input}()], Kmeans.InputCentroids, centroids)
 
-            Algorithms.compute(localAlgorithm)
-            Algorithms.addInput(masterAlgorithm, Kmeans.PartialResults, Kmeans.getPartialResult(localAlgorithm))
+            compute(localAlgorithm)
+            add(masterAlgorithm[Val{:input}()], Kmeans.PartialResults, Kmeans.getPartialResult(localAlgorithm))
         end
 
-        Algorithms.compute(masterAlgorithm)
+        compute(masterAlgorithm)
         Kmeans.finalizeCompute(masterAlgorithm)
 
         centroids = Kmeans.get(Kmeans.getResult(masterAlgorithm), Kmeans.Centroids)
@@ -74,10 +74,10 @@ function main(output = true)
         localAlgorithm = Kmeans.Batch(nClusters, 0)
 
         # Set the input data to the algorithm
-        Algorithms.setInput(localAlgorithm, Kmeans.Data, data[i])
-        Algorithms.setInput(localAlgorithm, Kmeans.InputCentroids, centroids)
+        set(localAlgorithm[Val{:input}()], Kmeans.Data, data[i])
+        set(localAlgorithm[Val{:input}()], Kmeans.InputCentroids, centroids)
 
-        Algorithms.compute(localAlgorithm)
+        compute(localAlgorithm)
 
         assignments[i] = Kmeans.get(Kmeans.getResult(localAlgorithm), Kmeans.Assignments)
     end
