@@ -27,7 +27,7 @@ daal::services::SharedPtr<daal::data_management::NumericTable> result = $(dataSo
 result;
             """)
 
-
-
-
+    struct Tensor
+        o::Cxx.CppValue
+    end
 end

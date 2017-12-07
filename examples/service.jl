@@ -13,6 +13,13 @@ printNumericTables(::Type{T1}, ::Type{T2}, dataTable1, dataTable2, title1 = "", 
     icxx"printNumericTables<$T1,$T2>($(dataTable1.o), $(dataTable2.o), $title1, $title2, $message, $nPrintedRows, $interval);"
 
 struct CSRNumericTable
-    o
+    o::Cxx.CppValue
 end
 createSparseTable(::Type{T}, datasetFileName::String) where {T<:Union{Float32,Float64}} = CSRNumericTable(icxx"daal::services::SharedPtr<CSRNumericTable>(createSparseTable<$T>($datasetFileName));")
+
+readTensorFromCSV(datasetFileName::String) = Daal.DataManagement.Tensor(icxx"readTensorFromCSV($datasetFileName);")
+
+getDimensionSize(o::Daal.DataManagement.Tensor, dim::Integer) = icxx"$(o.o)->getDimensionSize($dim);"
+
+printTensors(::Type{T1}, ::Type{T2}, dataTable1::Daal.DataManagement.Tensor, dataTable2::Daal.DataManagement.Tensor, title1 = "", title2 = "", message = "", nPrintedRows = 0, interval = 15) where {T1,T2} =
+    icxx"printTensors<$T1,$T2>($(dataTable1.o), $(dataTable2.o), $title1, $title2, $message, $nPrintedRows, $interval);"

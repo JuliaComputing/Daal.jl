@@ -22,8 +22,4 @@ end
 
 get(o::PredictionResult, id) = NumericTable(icxx"$(o.o)->get($id);")
 
-# PredictionResult() = PredictionResult(icxx"daal::algorithms::classifier::prediction::Result();")
-
-# SharedPtr(::Type{PredictionResult}) = SharedPtr{PredictionResult}(icxx"daal::services::SharedPtr<daal::algorithms::classifier::prediction::Result>(new daal::algorithms::classifier::prediction::Result());")
-
 end
