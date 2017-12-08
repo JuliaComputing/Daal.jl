@@ -17,17 +17,8 @@ module DataManagement
     loadDataBlock(dataSource, nVectors::Integer) = icxx"$(dataSource).loadDataBlock($nVectors);"
     loadDataBlock(dataSource)                    = icxx"$(dataSource).loadDataBlock();"
 
-    struct NumericTable
-        o
-    end
-
-    getNumericTable(dataSource) = NumericTable(
-        icxx"""
+    getNumericTable(dataSource) = icxx"""
 daal::services::SharedPtr<daal::data_management::NumericTable> result = $(dataSource).getNumericTable();
 result;
-            """)
-
-    struct Tensor
-        o::Cxx.CppValue
-    end
+"""
 end

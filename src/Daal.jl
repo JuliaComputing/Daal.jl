@@ -14,9 +14,11 @@ module Daal
 
     cxxinclude("daal.h")
 
-    # Step methods
+    # Step methods. Constant propagation in 0.7 might make the structs unnecessary
     struct Step2Master end
     struct Step1Local end
+    const step2Master = icxx"daal::step2Master;"
+    const step1Local  = icxx"daal::step1Local;"
 
     include("services.jl")
     include("datamanagement.jl")

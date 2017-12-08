@@ -40,12 +40,12 @@ function main(output = true)
 
         set(localInit[Val{:input}()], Kmeans.Init.Data, data[i])
         compute(localInit)
-        add(masterInit[Val{:input}()], Kmeans.Init.PartialResults, Kmeans.Init.getPartialResult(localInit))
+        add(masterInit[Val{:input}()], Kmeans.Init.PartialResults, Kmeans.getPartialResult(localInit))
     end
 
     Algorithms.compute(masterInit)
-    Kmeans.Init.finalizeCompute(masterInit)
-    centroids = Kmeans.Init.get(Kmeans.Init.getResult(masterInit), Kmeans.Init.Centroids)
+    Kmeans.finalizeCompute(masterInit)
+    centroids = get(Kmeans.getResult(masterInit), Kmeans.Init.Centroids)
 
     # Calculate centroids
     for it in 1:nIterations

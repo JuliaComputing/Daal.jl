@@ -1,7 +1,6 @@
 module Kmeans
 
     import ....Daal: Step2Master, Step1Local
-    import ....Daal.DataManagement: NumericTable
 
     using Cxx
 
@@ -12,57 +11,37 @@ module Kmeans
     GoalFunction   = icxx"daal::algorithms::kmeans::goalFunction;"
     Assignments    = icxx"daal::algorithms::kmeans::assignments;"
 
-    # Method methods
-    struct LloydDense end
+    # Method enums
+    const LloydDense = icxx"daal::algorithms::kmeans::lloydDense;"
 
-    struct Distributed{S,T,M}
-        o::Cxx.CppValue
-    end
+    # FixMe! Might be able to avoid Vals with constant propagatio in 0.7
 
-    Distributed(::Type{Step2Master}, ::Type{T}, nClusters, nIterations = 1) where {T<:Union{Float32,Float64}} =
-        Distributed{Step2Master,T,LloydDense}(icxx"daal::algorithms::kmeans::Distributed<daal::step2Master,$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);")
+    Distributed(::Type{Step2Master}, ::Type{T}, nClusters::Integer, nIterations::Integer = 1) where {T<:Union{Float32,Float64}} =
+        icxx"daal::algorithms::kmeans::Distributed<daal::step2Master,$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);"
     Distributed(::Type{S}, nClusters, nIterations = 1) where {S} = Distributed(S, Float64, nClusters, nIterations)
+    Distributed(::Type{Step1Local}, ::Type{T}, nClusters::Integer, assignFlag::Bool = false) where {T<:Union{Float32,Float64}} =
+        icxx"daal::algorithms::kmeans::Distributed<daal::step1Local,$T,daal::algorithms::kmeans::lloydDense>($nClusters, $assignFlag);"
 
-    Distributed(::Type{Step1Local}, ::Type{T}, nClusters, assignFlag = false) where {T<:Union{Float32,Float64}} =
-        Distributed{Step1Local,T,LloydDense}(icxx"daal::algorithms::kmeans::Distributed<daal::step1Local,$T,daal::algorithms::kmeans::lloydDense>($nClusters, $assignFlag);")
+    finalizeCompute(o) = icxx"$o.finalizeCompute();"
 
-    finalizeCompute(o::Distributed) = icxx"$(o.o).finalizeCompute();"
+    getPartialResult(o) = icxx"$o.getPartialResult();"
 
-    struct PartialResult
-        o::Cxx.CppValue
-    end
-    getPartialResult(o::Distributed) = PartialResult(icxx"$(o.o).getPartialResult();")
+    getResult(o) = icxx"$o.getResult();"
 
-    struct Result
-        o::Cxx.CppValue
-    end
-    getResult(o::Distributed) = Result(icxx"$(o.o).getResult();")
-
-    get(o::Result, id) = NumericTable(icxx"$(o.o)->get($id);")
-
-    struct Batch{T<:Union{Float32,Float64},M}
-        o::Cxx.CppValue
-    end
     Batch(::Type{T}, nClusters::Integer, nIterations::Integer) where {T} =
-        Batch{T,LloydDense}(icxx"daal::algorithms::kmeans::Batch<$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);")
+        icxx"daal::algorithms::kmeans::Batch<$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);"
     Batch(nClusters::Integer, nIterations::Integer) = Batch(Float64, nClusters, nIterations)
 
-    getResult(o::Batch) = Result(icxx"""
-        daal::services::SharedPtr<daal::algorithms::kmeans::Result> result = $(o.o).getResult();
-        result;
-        """)
+    # getResult(o) = icxx"""
+    #     daal::services::SharedPtr<daal::algorithms::kmeans::Result> result = $o.getResult();
+    #     result;
+    #     """
 
-    struct Input
-        o::Cxx.CppPtr
-    end
-
-    Base.getindex(o::Batch, ::Val{:input})       = Input(icxx"&$(o.o).input;")
-    Base.getindex(o::Distributed, ::Val{:input}) = Input(icxx"&$(o.o).input;")
+    Base.getindex(o, ::Val{:input}) = icxx"&$o.input;"
 
     module Init
 
         import .....Daal: Step2Master, Step1Local
-        import .....Daal.DataManagement: NumericTable
 
         using Cxx
 
@@ -73,34 +52,12 @@ module Kmeans
         # Method methods
         struct RandomDense end
 
-        struct Distributed{S,T,M}
-            o::Cxx.CppValue
-        end
-
         Distributed(::Type{Step2Master}, ::Type{T}, ::Type{RandomDense}, nClusters, offset = 0) where {T<:Union{Float32,Float64}} =
-            Distributed{Step2Master,T,RandomDense}(icxx"daal::algorithms::kmeans::init::Distributed<daal::step2Master,$T,daal::algorithms::kmeans::init::randomDense>($nClusters, $offset);")
+            icxx"daal::algorithms::kmeans::init::Distributed<daal::step2Master,$T,daal::algorithms::kmeans::init::randomDense>($nClusters, $offset);"
 
         Distributed(::Type{Step1Local}, ::Type{T}, ::Type{RandomDense}, nClusters, nRowsTotal, offset = 0) where {T<:Union{Float32,Float64}} =
-            Distributed{Step1Local,T,RandomDense}(icxx"daal::algorithms::kmeans::init::Distributed<daal::step1Local,$T,daal::algorithms::kmeans::init::randomDense>($nClusters, $nRowsTotal, $offset);")
+            icxx"daal::algorithms::kmeans::init::Distributed<daal::step1Local,$T,daal::algorithms::kmeans::init::randomDense>($nClusters, $nRowsTotal, $offset);"
 
-        finalizeCompute(o::Distributed) = icxx"$(o.o).finalizeCompute();"
-
-        struct Input
-            o::Cxx.CppPtr
-        end
-
-        Base.getindex(o::Distributed, ::Val{:input}) = Input(icxx"&$(o.o).input;")
-
-        struct PartialResult
-            o::Cxx.CppValue
-        end
-        getPartialResult(o::Distributed) = PartialResult(icxx"$(o.o).getPartialResult();")
-
-        struct Result
-            o::Cxx.CppValue
-        end
-        getResult(o::Distributed) = Result(icxx"$(o.o).getResult();")
-
-        get(o::Result, id) = NumericTable(icxx"$(o.o)->get($id);")
+        get(o, id) = icxx"$o->get($id);"
     end # Init
 end # Kmeans

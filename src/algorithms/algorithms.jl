@@ -2,12 +2,19 @@ module Algorithms
 
 using Cxx
 
+const CppType = Union{Cxx.CppValue,Cxx.CppPtr,Cxx.CppRef}
+
+import Base: get
 export compute, set, add
 
-compute(o) = icxx"$(o.o).compute();"
+# compute(o) = icxx"$(o.o).compute();"
+compute(o) = icxx"$o.compute();"
 
-set(o, id, value) = icxx"$(o.o)->set($id, $(value.o));"
-add(o, id, value) = icxx"$(o.o)->add($id, $(value.o));"
+get(o::CppType, id) = icxx"$o->get($id);"
+# set(o, id, value) = icxx"$(o.o)->set($id, $(value.o));"
+set(o::CppType, id, value) = icxx"$o->set($id, $value);"
+# add(o, id, value) = icxx"$(o.o)->add($id, $(value.o));"
+add(o::CppType, id, value) = icxx"$o->add($id, $value);"
 
 struct Parameter
     o::Cxx.CppPtr
