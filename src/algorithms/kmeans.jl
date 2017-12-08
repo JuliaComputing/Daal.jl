@@ -26,16 +26,9 @@ module Kmeans
 
     getPartialResult(o) = icxx"$o.getPartialResult();"
 
-    getResult(o) = icxx"$o.getResult();"
-
     Batch(::Type{T}, nClusters::Integer, nIterations::Integer) where {T} =
         icxx"daal::algorithms::kmeans::Batch<$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);"
     Batch(nClusters::Integer, nIterations::Integer) = Batch(Float64, nClusters, nIterations)
-
-    # getResult(o) = icxx"""
-    #     daal::services::SharedPtr<daal::algorithms::kmeans::Result> result = $o.getResult();
-    #     result;
-    #     """
 
     Base.getindex(o, ::Val{:input}) = icxx"&$o.input;"
 

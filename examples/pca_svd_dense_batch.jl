@@ -22,15 +22,15 @@ function main(output = true)
     algorithm = PCA.Batch(Float32, svd)
 
     # Set the algorithm input data
-    PCA.setInput(algorithm, PCA.Data, DataManagement.getNumericTable(dataSource))
+    set(algorithm[Val{:input}()], PCA.Data, DataManagement.getNumericTable(dataSource))
 
     # Compute results of the PCA algorithm
-    Algorithms.compute(algorithm)
-    result = PCA.getResult(algorithm)
+    compute(algorithm)
+    result = getResult(algorithm)
 
     # Print the results
-    printNumericTable(PCA.get(result, PCA.Eigenvalues), "Eigenvalues:")
-    printNumericTable(PCA.get(result, PCA.Eigenvectors), "Eigenvectors:")
+    printNumericTable(get(result, PCA.Eigenvalues), "Eigenvalues:")
+    printNumericTable(get(result, PCA.Eigenvectors), "Eigenvectors:")
 
     return 0
 end

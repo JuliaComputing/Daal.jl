@@ -45,7 +45,7 @@ function main(output = true)
 
     Algorithms.compute(masterInit)
     Kmeans.finalizeCompute(masterInit)
-    centroids = get(Kmeans.getResult(masterInit), Kmeans.Init.Centroids)
+    centroids = get(getResult(masterInit), Kmeans.Init.Centroids)
 
     # Calculate centroids
     for it in 1:nIterations
@@ -64,8 +64,8 @@ function main(output = true)
         compute(masterAlgorithm)
         Kmeans.finalizeCompute(masterAlgorithm)
 
-        centroids = Kmeans.get(Kmeans.getResult(masterAlgorithm), Kmeans.Centroids)
-        goalFunction = Kmeans.get(Kmeans.getResult(masterAlgorithm), Kmeans.GoalFunction)
+        centroids = Kmeans.get(getResult(masterAlgorithm), Kmeans.Centroids)
+        goalFunction = Kmeans.get(getResult(masterAlgorithm), Kmeans.GoalFunction)
     end
 
     # Calculate assignments
@@ -79,7 +79,7 @@ function main(output = true)
 
         compute(localAlgorithm)
 
-        assignments[i] = Kmeans.get(Kmeans.getResult(localAlgorithm), Kmeans.Assignments)
+        assignments[i] = Kmeans.get(getResult(localAlgorithm), Kmeans.Assignments)
     end
 
     # Print the clusterization results

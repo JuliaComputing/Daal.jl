@@ -5,7 +5,7 @@ using Cxx
 const CppType = Union{Cxx.CppValue,Cxx.CppPtr,Cxx.CppRef}
 
 import Base: get
-export compute, set, add
+export add, compute, getResult, set
 
 # compute(o) = icxx"$(o.o).compute();"
 compute(o) = icxx"$o.compute();"
@@ -15,6 +15,8 @@ get(o::CppType, id) = icxx"$o->get($id);"
 set(o::CppType, id, value) = icxx"$o->set($id, $value);"
 # add(o, id, value) = icxx"$(o.o)->add($id, $(value.o));"
 add(o::CppType, id, value) = icxx"$o->add($id, $value);"
+
+getResult(o::CppType) = icxx"$o.getResult();"
 
 struct Parameter
     o::Cxx.CppPtr
