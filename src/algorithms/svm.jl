@@ -1,26 +1,26 @@
 module SVM
 
-using Cxx
+    using Cxx
 
-abstract type Batch end
+    # Base.getindex(o::CxxType, Val{:parameter}) = icxx"$o.->parameter;"
+    # Base.setindex!(o::CxxType, kernel, Val{:kernel}) = icxx"($(o.o))->parameter.kernel = $(kernel.o);"
 
-setKernel(o::Batch, kernel) = icxx"($(o.o))->parameter.kernel = $(kernel.o);"
-setCacheSize(o::Batch, sz::Integer) = icxx"($(o.o))->parameter.cacheSize = $sz;"
+    setKernel(o, kernel) = icxx"$o->parameter.kernel = $kernel;"
+    setCacheSize(o, sz::Integer) = icxx"$o->parameter.cacheSize = $sz;"
 
-# There are two different SVM methods so we might want to add a method parameter at some point
-struct TrainingBatch{T<:Union{Float32,Float64}} <: Batch
-    o::Cxx.CppValue
-end
+    module Training
 
-TrainingBatch(::Type{T}) where {T<:Union{Float32,Float64}} = TrainingBatch{T}(icxx"daal::services::SharedPtr<daal::algorithms::svm::training::Batch<$T>>(new daal::algorithms::svm::training::Batch<$T>());")
-TrainingBatch() = TrainingBatch(Float64)
+        using Cxx
 
-# There are two different SVM methods so we might want to add a method parameter at some point
-struct PredictionBatch{T<:Union{Float32,Float64}} <: Batch
-    o::Cxx.CppValue
-end
+        Batch(::Type{T}) where {T<:Union{Float32,Float64}} = icxx"daal::services::SharedPtr<daal::algorithms::svm::training::Batch<$T>>(new daal::algorithms::svm::training::Batch<$T>());"
+        Batch() = Batch(Float64)
+    end # Training
 
-PredictionBatch(::Type{T}) where {T<:Union{Float32,Float64}} = PredictionBatch{T}(icxx"daal::services::SharedPtr<daal::algorithms::svm::prediction::Batch<$T>>(new daal::algorithms::svm::prediction::Batch<$T>());")
-PredictionBatch() = PredictionBatch(Float64)
+    module Prediction
 
+        using Cxx
+
+        Batch(::Type{T}) where {T<:Union{Float32,Float64}} = icxx"daal::services::SharedPtr<daal::algorithms::svm::prediction::Batch<$T>>(new daal::algorithms::svm::prediction::Batch<$T>());"
+        Batch() = Batch(Float64)
+    end # Prediction
 end

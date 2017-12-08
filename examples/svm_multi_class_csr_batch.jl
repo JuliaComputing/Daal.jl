@@ -20,8 +20,8 @@ const testLabelsFileName       = joinpath(DAAL_PREFIX, "batch", "svm_multi_class
 
 const nClasses                 = 5
 
-training = SVM.TrainingBatch()
-prediction = SVM.PredictionBatch()
+training = SVM.Training.Batch()
+prediction = SVM.Prediction.Batch()
 
 kernel = KernelFunction.Linear.Batch(Float64, KernelFunction.Linear.FastCSR())
 
@@ -50,21 +50,21 @@ function trainModel()
     DataManagement.loadDataBlock(trainLabelsDataSource)
 
     # Create an algorithm object to train the multi-class SVM model
-    algorithm = MultiClassClassifier.TrainingBatch()
+    algorithm = MultiClassClassifier.Training.Batch()
 
     MultiClassClassifier.setNClasses(algorithm, nClasses)
     MultiClassClassifier.setTraining(algorithm, training)
     MultiClassClassifier.setPrediction(algorithm, prediction)
 
     # Pass a training data set and dependent values to the algorithm
-    Algorithms.setInput(algorithm, Classifier.TrainingData, trainData)
-    Algorithms.setInput(algorithm, Classifier.TrainingLabels, DataManagement.getNumericTable(trainLabelsDataSource))
+    set(algorithm[Val{:input}()], Classifier.Training.DataId, trainData)
+    set(algorithm[Val{:input}()], Classifier.Training.LabelsId, DataManagement.getNumericTable(trainLabelsDataSource))
 
     # Build the multi-class SVM model
-    Algorithms.compute(algorithm)
+    compute(algorithm)
 
     # Retrieve the algorithm results
-    return MultiClassClassifier.getResult(algorithm)
+    return getResult(algorithm)
 end
 
 function testModel(trainingResult)
@@ -73,21 +73,21 @@ function testModel(trainingResult)
     testData = createSparseTable(Float64, testDatasetFileName)
 
     # Create an algorithm object to predict multi-class SVM values
-    algorithm = MultiClassClassifier.PredictionBatch()
+    algorithm = MultiClassClassifier.Prediction.Batch()
 
     MultiClassClassifier.setNClasses(algorithm, nClasses)
     MultiClassClassifier.setTraining(algorithm, training)
     MultiClassClassifier.setPrediction(algorithm, prediction)
 
     # Pass a testing data set and the trained model to the algorithm
-    Algorithms.setInput(algorithm, Classifier.PredictionData, testData)
-    Algorithms.setInput(algorithm, Classifier.PredictionModel, MultiClassClassifier.get(trainingResult, Classifier.TrainingModel))
+    set(algorithm[Val{:input}()], Classifier.Prediction.DataId, testData)
+    set(algorithm[Val{:input}()], Classifier.Prediction.ModelId, get(trainingResult, Classifier.Training.ModelId))
 
      # Predict multi-class SVM values
-    Algorithms.compute(algorithm)
+    compute(algorithm)
 
     # Retrieve the algorithm results
-    return MultiClassClassifier.getResult(algorithm)
+    return getResult(algorithm)
 end
 
 function printResults(predictionResult)
@@ -100,7 +100,7 @@ function printResults(predictionResult)
     printNumericTables(Int32,
                        Int32,
                        testGroundTruth,
-                       Classifier.get(predictionResult, Classifier.PredictionPrediction),
+                       get(predictionResult, Classifier.Prediction.PredictionId),
                        "Ground truth",
                        "Classification results",
                        "Multi-class SVM classification sample program results (first 20 observations):",

@@ -1,25 +1,20 @@
 module Classifier
 
-import ....Daal.DataManagement: NumericTable
+    module Training
 
-using Cxx
+        using Cxx
 
-# Training
+        DataId   = icxx"daal::algorithms::classifier::training::data;"
+        LabelsId = icxx"daal::algorithms::classifier::training::labels;"
+        ModelId  = icxx"daal::algorithms::classifier::training::model;"
+    end # Training
 
-TrainingData   = icxx"daal::algorithms::classifier::training::data;"
-TrainingLabels = icxx"daal::algorithms::classifier::training::labels;"
-TrainingModel  = icxx"daal::algorithms::classifier::training::model;"
+    module Prediction
 
-# Prediction
+        using Cxx
 
-PredictionData       = icxx"daal::algorithms::classifier::prediction::data;"
-PredictionModel      = icxx"daal::algorithms::classifier::prediction::model;"
-PredictionPrediction = icxx"daal::algorithms::classifier::prediction::prediction;"
-
-struct PredictionResult
-    o
-end
-
-get(o::PredictionResult, id) = NumericTable(icxx"$(o.o)->get($id);")
-
+        DataId       = icxx"daal::algorithms::classifier::prediction::data;"
+        ModelId      = icxx"daal::algorithms::classifier::prediction::model;"
+        PredictionId = icxx"daal::algorithms::classifier::prediction::prediction;"
+    end # Prediction
 end
