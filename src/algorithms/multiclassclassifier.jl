@@ -21,4 +21,4 @@ module MultiClassClassifier
         Batch(::Type{T}) where {T<:Union{Float32,Float64}} = icxx"daal::algorithms::multi_class_classifier::prediction::Batch<$T>();"
         Batch() = Batch(Float64)
     end # Prediction
-end
+end # MultiClassClassifier

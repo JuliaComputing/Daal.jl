@@ -14,8 +14,6 @@ module Kmeans
     # Method enums
     const LloydDense = icxx"daal::algorithms::kmeans::lloydDense;"
 
-    # FixMe! Might be able to avoid Vals with constant propagatio in 0.7
-
     Distributed(::Type{Step2Master}, ::Type{T}, nClusters::Integer, nIterations::Integer = 1) where {T<:Union{Float32,Float64}} =
         icxx"daal::algorithms::kmeans::Distributed<daal::step2Master,$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);"
     Distributed(::Type{S}, nClusters, nIterations = 1) where {S} = Distributed(S, Float64, nClusters, nIterations)
@@ -29,8 +27,6 @@ module Kmeans
     Batch(::Type{T}, nClusters::Integer, nIterations::Integer) where {T} =
         icxx"daal::algorithms::kmeans::Batch<$T,daal::algorithms::kmeans::lloydDense>($nClusters, $nIterations);"
     Batch(nClusters::Integer, nIterations::Integer) = Batch(Float64, nClusters, nIterations)
-
-    Base.getindex(o, ::Val{:input}) = icxx"&$o.input;"
 
     module Init
 

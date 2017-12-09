@@ -51,25 +51,15 @@ module NeuralNetworks
         Topology()    = icxx"daal::algorithms::neural_networks::prediction::Topology();"
         TopologyPtr() = icxx"daal::services::SharedPtr<daal::algorithms::neural_networks::prediction::Topology>(new daal::algorithms::neural_networks::prediction::Topology());"
 
-        # add(o::TopologyPtr, value) = icxx"$(o.o)->add($(value.o));"
-
-        # get(o::TopologyPtr, id) = LayerDescriptor(icxx"$(o.o)->get($id);")
-
         ModelPtr(o) = icxx"daal::services::SharedPtr<daal::algorithms::neural_networks::prediction::Model>(new daal::algorithms::neural_networks::prediction::Model(*$o));"
 
         # FixMe! According to Keno it shouldn't be necessary to use a temporary variable for
         # this but the reference count in the SharedPtr isn't correct if I leave it out. Might
         # be an issue with Cxx.jl
-        # getLayer(o::ModelPtr, index::Integer) = LayerIfacePtr(icxx"daal::algorithms::neural_networks::layers::forward::LayerIfacePtr ptr = $(o.o)->getLayer($index); ptr;")
-
-        # getLayer(o, index::Integer) = icxx"$o->getLayer($index);"
         getLayer(o, index::Integer) = icxx"daal::algorithms::neural_networks::layers::forward::LayerIfacePtr ptr = $o->getLayer($index); ptr;"
 
         Batch(::Type{T}) where {T<:Union{Float32,Float64}} = icxx"daal::algorithms::neural_networks::prediction::Batch<$T>();"
         Batch() = Batch(Float64)
 
-        # getResult(o::Batch) = Result(icxx"daal::services::SharedPtr<daal::algorithms::neural_networks::prediction::Result> ptr = $(o.o).getResult(); ptr;")
-
-        # get(o::Result, id) = Tensor(icxx"daal::data_management::TensorPtr ptr = $(o.o)->get($id); ptr;")
     end # Prediction
 end # NeuralNetworks
