@@ -26,9 +26,9 @@ prediction = SVM.Prediction.Batch()
 kernel = KernelFunction.Linear.Batch(Float64, KernelFunction.Linear.FastCSR())
 
 function main(output = true)
-    SVM.setCacheSize(training, 100000000)
-    SVM.setKernel(training, kernel)
-    SVM.setKernel(prediction, kernel)
+    training[  Val{:parameter}()][Val{:cacheSize}()] = 100000000
+    training[  Val{:parameter}()][Val{:kernel}()]    = kernel
+    prediction[Val{:parameter}()][Val{:kernel}()]    = kernel
 
     trainingResult = trainModel()
 

@@ -2,12 +2,6 @@ module SVM
 
     using Cxx
 
-    # Base.getindex(o::CxxType, Val{:parameter}) = icxx"$o.->parameter;"
-    # Base.setindex!(o::CxxType, kernel, Val{:kernel}) = icxx"($(o.o))->parameter.kernel = $(kernel.o);"
-
-    setKernel(o, kernel) = icxx"$o->parameter.kernel = $kernel;"
-    setCacheSize(o, sz::Integer) = icxx"$o->parameter.cacheSize = $sz;"
-
     module Training
 
         using Cxx

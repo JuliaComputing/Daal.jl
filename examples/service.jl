@@ -14,9 +14,9 @@ printNumericTables(::Type{T1}, ::Type{T2}, dataTable1, dataTable2, title1 = "", 
 
 createSparseTable(::Type{T}, datasetFileName::String) where {T<:Union{Float32,Float64}} = icxx"daal::services::SharedPtr<CSRNumericTable>(createSparseTable<$T>($datasetFileName));"
 
-readTensorFromCSV(datasetFileName::String) = Daal.DataManagement.Tensor(icxx"readTensorFromCSV($datasetFileName);")
+readTensorFromCSV(datasetFileName::String) = icxx"readTensorFromCSV($datasetFileName);"
 
-getDimensionSize(o, dim::Integer) = icxx"$(o.o)->getDimensionSize($dim);"
+getDimensionSize(o, dim::Integer) = icxx"$o->getDimensionSize($dim);"
 
 printTensors(::Type{T1}, ::Type{T2}, dataTable1, dataTable2, title1 = "", title2 = "", message = "", nPrintedRows = 0, interval = 15) where {T1,T2} =
-    icxx"printTensors<$T1,$T2>($(dataTable1.o), $(dataTable2.o), $title1, $title2, $message, $nPrintedRows, $interval);"
+    icxx"printTensors<$T1,$T2>($(dataTable1), $(dataTable2), $title1, $title2, $message, $nPrintedRows, $interval);"
